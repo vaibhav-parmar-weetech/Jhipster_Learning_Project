@@ -1,6 +1,5 @@
 package com.mycompany.myapp.service;
 
-import com.mycompany.myapp.domain.Order;
 import com.mycompany.myapp.service.dto.CreateOrderDTO;
 import com.mycompany.myapp.service.dto.OrderDTO;
 import com.mycompany.myapp.service.dto.UserOrderResponseDTO;
@@ -75,7 +74,9 @@ public interface OrderService {
 
     void cancelOrder(Long id);
 
-    Order acceptOrder(Long id);
+    UserOrderResponseDTO acceptOrder(Long id);
 
-    Page<UserOrderResponseDTO> findAllForManager(Pageable pageable);
+    Page<UserOrderResponseDTO> findAllForManager(Pageable pageable, String status);
+
+    UserOrderResponseDTO rejectOrder(Long id);
 }

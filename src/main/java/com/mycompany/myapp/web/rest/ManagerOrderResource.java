@@ -1,6 +1,7 @@
 package com.mycompany.myapp.web.rest;
 
 import com.mycompany.myapp.domain.Order;
+import com.mycompany.myapp.domain.OrderStatus;
 import com.mycompany.myapp.service.OrderService;
 import com.mycompany.myapp.service.dto.OrderDTO;
 import com.mycompany.myapp.service.dto.UserOrderResponseDTO;
@@ -28,19 +29,33 @@ public class ManagerOrderResource {
     private static final Logger LOG = LoggerFactory.getLogger(ManagerOrderResource.class);
 
     @GetMapping("")
-    public ResponseEntity<List<UserOrderResponseDTO>> getAllOrders(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<UserOrderResponseDTO>> getAllOrders(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false) @io.swagger.v3.oas.annotations.Parameter(
+            description = "Filter orders by status",
+            schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = OrderStatus.class)
+        ) OrderStatus status
+    ) {
         LOG.debug("REST request to get a page of Orders");
-        Page<UserOrderResponseDTO> page;
 
-        page = orderService.findAllForManager(pageable);
+        Page<UserOrderResponseDTO> page = (status == null)
+            ? orderService.findAllForManager(pageable, null)
+            : orderService.findAllForManager(pageable, status.name());
 
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     @PostMapping("/{id}/accept")
-    public ResponseEntity<Order> acceptOrder(@PathVariable Long id) {
-        Order order = orderService.acceptOrder(id);
-        return ResponseEntity.ok(order);
+    public ResponseEntity<UserOrderResponseDTO> acceptOrder(@PathVariable Long id) {
+        UserOrderResponseDTO userOrderResponseDTO = orderService.acceptOrder(id);
+        return ResponseEntity.ok(userOrderResponseDTO);
+    }
+
+    @PostMapping("/{id}/reject")
+    public ResponseEntity<UserOrderResponseDTO> rejectOrder(@PathVariable Long id) {
+        UserOrderResponseDTO userOrderResponseDTO = orderService.rejectOrder(id);
+        return ResponseEntity.ok(userOrderResponseDTO);
     }
 }

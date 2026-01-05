@@ -51,4 +51,6 @@ public interface OrderRepository extends OrderRepositoryWithBagRelationships, Jp
     Optional<Order> findByIdAndUserLogin(Long id, String login);
 
     Page<Order> findByUserLoginAndStatus(String login, String status, Pageable pageable);
+
+    Page<Order> findByStatus(String status, Pageable pageable);
 }
