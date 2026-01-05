@@ -1,0 +1,32 @@
+{
+  "annotations": {
+    "changelogDate": "20260102094440"
+  },
+  "fields": [
+    {
+      "fieldName": "orderQty",
+      "fieldType": "Integer"
+    }
+  ],
+  "name": "OrderProduct",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityField": "id",
+      "otherEntityName": "order",
+      "relationshipName": "order",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityField": "id",
+      "otherEntityName": "product",
+      "relationshipName": "product",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "no"
+}
