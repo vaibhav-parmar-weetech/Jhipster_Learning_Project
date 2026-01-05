@@ -19,13 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class ProductServiceImpl implements ProductService {
+public abstract class ProductServiceImpl implements ProductService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductServiceImpl.class);
 
-    private final ProductRepository productRepository;
+    final ProductRepository productRepository;
 
-    private final ProductMapper productMapper;
+    final ProductMapper productMapper;
 
     public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
@@ -81,33 +81,5 @@ public class ProductServiceImpl implements ProductService {
     public void delete(Long id) {
         LOG.debug("Request to delete Product : {}", id);
         productRepository.deleteById(id);
-    }
-
-    @Override
-    public Page<UserProductResponseDTO> findAllProductForUser(Pageable pageable) {
-        return productRepository
-            .findAll(pageable)
-            .map(product -> {
-                UserProductResponseDTO dto = new UserProductResponseDTO();
-                dto.setId(product.getId());
-                dto.setName(product.getName());
-                dto.setPrice(product.getPrice());
-                dto.setQty(product.getQty());
-                return dto;
-            });
-    }
-
-    @Override
-    public Optional<UserProductResponseDTO> findOneForUser(Long id) {
-        return productRepository
-            .findById(id)
-            .map(product -> {
-                UserProductResponseDTO dto = new UserProductResponseDTO();
-                dto.setId(product.getId());
-                dto.setName(product.getName());
-                dto.setPrice(product.getPrice());
-                dto.setQty(product.getQty());
-                return dto;
-            });
     }
 }
