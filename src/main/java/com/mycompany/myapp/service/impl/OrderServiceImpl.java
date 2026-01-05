@@ -238,4 +238,43 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus("CANCELLED");
         orderRepository.save(order);
     }
+
+    public Order acceptOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (!order.getStatus().equals("PENDING")) {
+            throw new IllegalStateException("Only PENDING orders can be accepted");
+        }
+
+        order.setStatus("ACCEPTED");
+        return orderRepository.save(order);
+    }
+
+    @Override
+    public Page<UserOrderResponseDTO> findAllForManager(Pageable pageable) {
+        Page<Order> orders;
+        orders = orderRepository.findAll(pageable);
+        return orders.map(order -> {
+            UserOrderResponseDTO dto = new UserOrderResponseDTO();
+            dto.setId(order.getId());
+            dto.setOrderDate(order.getOrderDate());
+            dto.setStatus(order.getStatus());
+            dto.setTotalAmount(order.getTotalAmount());
+
+            // ✅ Fetch ordered qty from join table
+            Set<OrderProductDTO> productDTOs = orderProductRepository
+                .findByOrderId(order.getId())
+                .stream()
+                .map(op -> {
+                    OrderProductDTO pdto = new OrderProductDTO();
+                    pdto.setProductId(op.getProduct().getId());
+                    pdto.setQty(op.getOrderQty());
+                    return pdto;
+                })
+                .collect(Collectors.toSet());
+
+            dto.setProducts(productDTOs);
+            return dto;
+        });
+    }
 }

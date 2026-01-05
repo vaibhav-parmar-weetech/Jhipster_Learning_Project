@@ -56,7 +56,6 @@ public class UserOrderResource {
         return ResponseEntity.ok(userOrderResponseDTO);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_USER')")
     @PutMapping("/{id}/cancel")
     public ResponseEntity<Void> cancelOrder(@PathVariable Long id) {
         orderService.cancelOrder(id);
